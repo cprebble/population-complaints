@@ -1,5 +1,5 @@
 import { globalIdField } from "graphql-relay";
-import { GraphQLObjectType, GraphQLString } from "graphql";
+import { GraphQLObjectType, GraphQLString, GraphQLInt } from "graphql";
 import { nodeInterface } from "../node-def";
 
 export default new GraphQLObjectType({
@@ -30,6 +30,10 @@ export default new GraphQLObjectType({
 		state: {
 			description: "The state of the complaining consumer.",
 			type: GraphQLString
+		},
+		counts: {
+			description: "Any counts of complaints.",
+			type: GraphQLInt
 		}
 	}),
 	interfaces: [nodeInterface],

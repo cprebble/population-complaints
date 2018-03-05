@@ -1,14 +1,31 @@
 import express from "express";
 import bodyParser from "body-parser";
 import errorhandler from "errorhandler";
+import { Client } from "pg";
 import { graphqlRoute } from "./routes";
 
 // TODO: add logger, ORM, ETL or Stream for data
 // TODO: tests, UI
+// TODO: fix build steps for production
+
+// TODO: move these to .env
+const PGHOST="localhost";
+const PGUSER="postgres";
+const PGDATABASE="consumers";
+const PGPASSWORD="Password1!";
+const PGPORT=5432;
 
 // init db and wait for ok
-const connectToDb = () => {
-
+const connectToDb = async () => {
+	const client = new Client({
+		user: PGUSER,
+		host: PGHOST,
+		database: PGDATABASE,
+		password: PGPASSWORD,
+		port: PGPORT
+	});
+	await client.connect();
+	return client;
 };
 
 const init = async () => {
