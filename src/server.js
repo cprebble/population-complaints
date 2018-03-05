@@ -5,7 +5,7 @@ import { Client } from "pg";
 import { graphqlRoute } from "./routes";
 
 // TODO: add logger, ORM, ETL or Stream for data
-// TODO: tests, UI
+// TODO: tests, README
 // TODO: fix build steps for production
 
 // TODO: move these to .env
@@ -28,6 +28,7 @@ const connectToDb = async () => {
 	return client;
 };
 
+let db;
 const init = async () => {
 	// eslint-disable-next-line no-console
 	console.log("Starting Population Complaints API"); 
@@ -39,7 +40,7 @@ const init = async () => {
 
 	app.use(bodyParser.json());
 
-	const db = await connectToDb();
+	db = await connectToDb();
 	app.settings.db = db;
 
 	app.use("/graphql", graphqlRoute(app));
@@ -65,6 +66,32 @@ const start = async () => {
 	} catch (err) {
 		// eslint-disable-next-line no-console
 		console.error(`An error occurred ${err}`);
-		process.exit(); // eslint-disable-line
+		exitHandler(err);
 	}
 })();
+
+const exitHandler = async function(err) {
+	// eslint-disable-next-line no-console
+	if (err) console.log("exitHandler err: " + err.stack);
+	await db.end();
+	process.exit();
+};
+
+//do something when app is closing
+process.on("exit", function() {
+	exitHandler();
+});
+
+//catches ctrl+c event
+process.on("SIGINT", function() {
+	exitHandler();
+});
+
+process.on("SIGTERM",function(){
+	exitHandler();
+});
+
+//catches uncaught exceptions
+process.on("uncaughtException", function(err) {
+	exitHandler(err);
+});

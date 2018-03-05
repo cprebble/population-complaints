@@ -43,11 +43,11 @@ order by sum desc
 
 * What is the fastest growing state that also has the most complaints for payday loans?
 
-select c.state, count(c.state) as scount, sum(p.change_percent)
+select c.state, round(cast(sum(p.change_percent)/count(c.state) as numeric), 2) as pchange
 from complaints c
 inner join populations p on (c.state = p.state)
 where lower(c.company) like lower('payday%')
 group by c.state
-order by scount desc
+order by pchange desc
 
 
