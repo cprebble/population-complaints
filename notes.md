@@ -33,12 +33,12 @@ select distinct state from complaints where lower(company) like lower('Bank of A
 select sum(change_number), sum(change_percent) from populations
 where state_name = 'Alaska'
 
-select p.state, sum(p.change_percent)
+select p.state, round(cast(sum(p.change_percent)/count(p.state) as numeric), 2) as pchange
 from populations p
 where p.state = any(select distinct state from complaints 
 where lower(company) like lower('Bank of America%'))
 group by p.state
-order by sum desc
+order by pchange desc
 
 
 * What is the fastest growing state that also has the most complaints for payday loans?

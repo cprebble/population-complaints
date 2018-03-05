@@ -4,7 +4,6 @@ import {
 	GraphQLString,
 	GraphQLList,
 	GraphQLNonNull,
-	GraphQLInt,
 	GraphQLFloat
 } from "graphql";
 import { nodeInterface } from "../node-def";
@@ -19,12 +18,12 @@ export default new GraphQLObjectType({
 			mostComplaintsBy: {
 				description: "Consumer complaints for company or product by state.",
 				args: {
-					returnArg: {type: new GraphQLNonNull(GraphQLString)},
+					returnCompanyOrProduct: {type: new GraphQLNonNull(GraphQLString)},
 					state: {type: new GraphQLNonNull(GraphQLString)}
 				},
 				type: new GraphQLList(complaintResultType),
-				resolve: async (root, { returnArg, state }, { db }) => {
-					const sqlString = addArgsToMostComplaintsBy(returnArg, state);
+				resolve: async (root, { returnCompanyOrProduct, state }, { db }) => {
+					const sqlString = addArgsToMostComplaintsBy(returnCompanyOrProduct, state);
 					console.log(sqlString); // eslint-disable-line no-console
 					const query = await db.query(sqlString);
 					return query.rows;
@@ -43,11 +42,35 @@ export default new GraphQLObjectType({
 					const query = await db.query(sqlString);
 					return query.rows;
 				}
+			},
+			populationChangeEachStateForComplaintsBy: {
+				description: "Population change in each state where complaint was received for company or product.",
+				args: {
+					byCompanyOrProduct: {type: new GraphQLNonNull(GraphQLString)},
+					byCompanyOrProductValue: {type: new GraphQLNonNull(GraphQLString)}
+				},
+				type: new GraphQLList(stateCountsResultsType),
+				resolve: async (root, { byCompanyOrProduct, byCompanyOrProductValue }, { db }) => {
+					const sqlString = addArgsToPopulationChangeEachStateForComplaintsBy(byCompanyOrProduct, byCompanyOrProductValue);
+					console.log(sqlString); // eslint-disable-line no-console
+					const query = await db.query(sqlString);
+					return query.rows;
+				}
 			}
 		};
 	},
 	interfaces: [nodeInterface],
 });
+
+
+const addArgsToPopulationChangeEachStateForComplaintsBy = (byArg, byArgValue) => `
+	select p.state, round(cast(sum(p.change_percent)/count(p.state) as numeric), 2) as pchange
+	from populations p
+	where p.state = any(select distinct state from complaints 
+	where lower(${byArg}) like lower('${byArgValue}%'))
+	group by p.state
+	order by pchange desc
+`;
 
 const stateCountsInnerType = new GraphQLObjectType({
 	name: "StateCounts",
@@ -144,5 +167,19 @@ fastestGrowingStateFor:
     }
   }
 }
+
+populationChangeEachStateForComplaintsBy:
+{
+  viewer {
+    id
+    populationChangeEachStateForComplaintsBy(byCompanyOrProduct: "company", byCompanyOrProductValue: "Bank of America") {
+      results {
+        state
+        percentChange
+      }
+    }
+  }
+}
+
 
 */
