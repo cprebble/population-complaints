@@ -4,11 +4,12 @@ import {
 	GraphQLString,
 	GraphQLList,
 	GraphQLNonNull,
-	GraphQLFloat
+	GraphQLFloat,
+	GraphQLInt
 } from "graphql";
 import { nodeInterface } from "../node-def";
-import ComplaintGraphType from "./complaint.graphType";
 
+// TODO: pagination
 export default new GraphQLObjectType({
 	name: "Viewer",
 	description: "Entry point into the graph.",
@@ -62,16 +63,6 @@ export default new GraphQLObjectType({
 	interfaces: [nodeInterface],
 });
 
-
-const addArgsToPopulationChangeEachStateForComplaintsBy = (byArg, byArgValue) => `
-	select p.state, round(cast(sum(p.change_percent)/count(p.state) as numeric), 2) as pchange
-	from populations p
-	where p.state = any(select distinct state from complaints 
-	where lower(${byArg}) like lower('${byArgValue}%'))
-	group by p.state
-	order by pchange desc
-`;
-
 const stateCountsInnerType = new GraphQLObjectType({
 	name: "StateCounts",
 	fields: {
@@ -93,15 +84,36 @@ const stateCountsResultsType = new GraphQLObjectType({
 	}
 });
 
+const complaintsInnerType = new GraphQLObjectType({
+	name: "ComplaintsInnerType",
+	fields: {
+		companyOrProduct: { type: GraphQLString },
+		counts: { type: GraphQLInt }
+	}
+});
+
 const complaintResultType = new GraphQLObjectType({
 	name: "MostComplaintsByResults",
 	fields: {
 		results: {
-			type: ComplaintGraphType,
-			resolve: (arg) => arg
+			type: complaintsInnerType,
+			resolve: (args) => {
+				const { company, product, counts } = args;
+				const companyOrProduct = company || product;
+				return { companyOrProduct, counts };
+			}
 		}
 	}
 });
+
+const addArgsToPopulationChangeEachStateForComplaintsBy = (byArg, byArgValue) => `
+	select p.state, round(cast(sum(p.change_percent)/count(p.state) as numeric), 2) as pchange
+	from populations p
+	where p.state = any(select distinct state from complaints 
+	where lower(${byArg}) like lower('${byArgValue}%'))
+	group by p.state
+	order by pchange desc
+`;
 
 const addArgsToFastestGrowingStateFor = (byArg, byArgValue) => `select c.state, 
 	round(cast(sum(p.change_percent)/count(c.state) as numeric), 2) as pchange 

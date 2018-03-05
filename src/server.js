@@ -4,10 +4,11 @@ import errorhandler from "errorhandler";
 import { Client } from "pg";
 import { graphqlRoute } from "./routes";
 
-// TODO: add logger, ORM, ETL or Stream for data
 // TODO: tests, README
+// TODO: move types into separate files
 // TODO: fix build steps for production
 
+// TODO: add logger, ORM, ETL or Stream for data
 // TODO: move these to .env
 const PGHOST="localhost";
 const PGUSER="postgres";
