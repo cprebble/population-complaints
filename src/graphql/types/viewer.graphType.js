@@ -1,13 +1,8 @@
 import { globalIdField } from "graphql-relay";
-import {
-	GraphQLObjectType,
-	GraphQLString,
-	GraphQLList,
-	GraphQLNonNull,
-	GraphQLFloat,
-	GraphQLInt
-} from "graphql";
+import { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLNonNull } from "graphql";
 import { nodeInterface } from "../node-def";
+import stateCountsResultsType from "./state-counts.graphType";
+import complaintsResultType from "./complaints-results.graphType";
 
 // TODO: pagination
 export default new GraphQLObjectType({
@@ -22,7 +17,7 @@ export default new GraphQLObjectType({
 					returnCompanyOrProduct: {type: new GraphQLNonNull(GraphQLString)},
 					state: {type: new GraphQLNonNull(GraphQLString)}
 				},
-				type: new GraphQLList(complaintResultType),
+				type: new GraphQLList(complaintsResultType),
 				resolve: async (root, { returnCompanyOrProduct, state }, { db }) => {
 					const sqlString = addArgsToMostComplaintsBy(returnCompanyOrProduct, state);
 					console.log(sqlString); // eslint-disable-line no-console
@@ -63,48 +58,6 @@ export default new GraphQLObjectType({
 	interfaces: [nodeInterface],
 });
 
-const stateCountsInnerType = new GraphQLObjectType({
-	name: "StateCounts",
-	fields: {
-		state: { type: GraphQLString },
-		percentChange: { type: GraphQLFloat }
-	}
-});
-
-const stateCountsResultsType = new GraphQLObjectType({
-	name: "FastestGrowingStateForResults",
-	fields: {
-		results: {
-			type: stateCountsInnerType,
-			resolve: (args) => {
-				const { state, pchange: percentChange } = args;
-				return { state, percentChange };
-			}
-		}
-	}
-});
-
-const complaintsInnerType = new GraphQLObjectType({
-	name: "ComplaintsInnerType",
-	fields: {
-		companyOrProduct: { type: GraphQLString },
-		counts: { type: GraphQLInt }
-	}
-});
-
-const complaintResultType = new GraphQLObjectType({
-	name: "MostComplaintsByResults",
-	fields: {
-		results: {
-			type: complaintsInnerType,
-			resolve: (args) => {
-				const { company, product, counts } = args;
-				const companyOrProduct = company || product;
-				return { companyOrProduct, counts };
-			}
-		}
-	}
-});
 
 const addArgsToPopulationChangeEachStateForComplaintsBy = (byArg, byArgValue) => `
 	select p.state, round(cast(sum(p.change_percent)/count(p.state) as numeric), 2) as pchange

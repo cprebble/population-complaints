@@ -5,7 +5,6 @@ import { Client } from "pg";
 import { graphqlRoute } from "./routes";
 
 // TODO: tests, README
-// TODO: move types into separate files
 // TODO: fix build steps for production
 
 // TODO: add logger, ORM, ETL or Stream for data
