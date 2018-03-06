@@ -1,8 +1,5 @@
-/* eslint-env browser */
+
 process.env.NODE_ENV = "test";
-
-const { JSDOM } = require("jsdom");
-
 require("babel-register");
 
 global.requestAnimationFrame = function(callback) {
@@ -17,7 +14,4 @@ function propagateToGlobal (window) {
 	}
 }
 
-const dom = new JSDOM(`<!doctype html><html><body></body></html>`);
-global.window = dom.window;
-global.document = dom.window.document;
 propagateToGlobal(global.window);

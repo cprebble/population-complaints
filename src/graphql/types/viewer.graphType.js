@@ -1,8 +1,8 @@
 import { globalIdField } from "graphql-relay";
 import { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLNonNull } from "graphql";
 import { nodeInterface } from "../node-def";
-import stateCountsResultsType from "./state-counts.graphType";
-import complaintsResultType from "./complaints-results.graphType";
+import StateCountsResultsType from "./state-counts.graphType";
+import ComplaintsResultType from "./complaints-results.graphType";
 
 // TODO: pagination
 export default new GraphQLObjectType({
@@ -17,10 +17,9 @@ export default new GraphQLObjectType({
 					returnCompanyOrProduct: {type: new GraphQLNonNull(GraphQLString)},
 					state: {type: new GraphQLNonNull(GraphQLString)}
 				},
-				type: new GraphQLList(complaintsResultType),
+				type: new GraphQLList(ComplaintsResultType),
 				resolve: async (root, { returnCompanyOrProduct, state }, { db }) => {
 					const sqlString = addArgsToMostComplaintsBy(returnCompanyOrProduct, state);
-					console.log(sqlString); // eslint-disable-line no-console
 					const query = await db.query(sqlString);
 					return query.rows;
 				}
@@ -31,10 +30,9 @@ export default new GraphQLObjectType({
 					byCompanyOrProduct: {type: new GraphQLNonNull(GraphQLString)},
 					byCompanyOrProductValue: {type: new GraphQLNonNull(GraphQLString)}
 				},
-				type: new GraphQLList(stateCountsResultsType),
+				type: new GraphQLList(StateCountsResultsType),
 				resolve: async (root, { byCompanyOrProduct, byCompanyOrProductValue }, { db }) => {
 					const sqlString = addArgsToFastestGrowingStateFor(byCompanyOrProduct, byCompanyOrProductValue);
-					console.log(sqlString); // eslint-disable-line no-console
 					const query = await db.query(sqlString);
 					return query.rows;
 				}
@@ -45,10 +43,9 @@ export default new GraphQLObjectType({
 					byCompanyOrProduct: {type: new GraphQLNonNull(GraphQLString)},
 					byCompanyOrProductValue: {type: new GraphQLNonNull(GraphQLString)}
 				},
-				type: new GraphQLList(stateCountsResultsType),
+				type: new GraphQLList(StateCountsResultsType),
 				resolve: async (root, { byCompanyOrProduct, byCompanyOrProductValue }, { db }) => {
 					const sqlString = addArgsToPopulationChangeEachStateForComplaintsBy(byCompanyOrProduct, byCompanyOrProductValue);
-					console.log(sqlString); // eslint-disable-line no-console
 					const query = await db.query(sqlString);
 					return query.rows;
 				}

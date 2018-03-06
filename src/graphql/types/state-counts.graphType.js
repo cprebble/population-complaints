@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLString, GraphQLFloat } from "graphql";
 
-const stateCountsInnerType = new GraphQLObjectType({
+const StateCountsInnerType = new GraphQLObjectType({
 	name: "StateCounts",
 	fields: {
 		state: { type: GraphQLString },
@@ -8,11 +8,11 @@ const stateCountsInnerType = new GraphQLObjectType({
 	}
 });
 
-const stateCountsResultsType = new GraphQLObjectType({
+const StateCountsResultsType = new GraphQLObjectType({
 	name: "FastestGrowingStateForResults",
 	fields: {
 		results: {
-			type: stateCountsInnerType,
+			type: StateCountsInnerType,
 			resolve: (args) => {
 				const { state, pchange: percentChange } = args;
 				return { state, percentChange };
@@ -21,4 +21,4 @@ const stateCountsResultsType = new GraphQLObjectType({
 	}
 });
 
-export default stateCountsResultsType;
+export default StateCountsResultsType;

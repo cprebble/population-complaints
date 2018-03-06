@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLString, GraphQLInt } from "graphql";
 
-const complaintsInnerType = new GraphQLObjectType({
+const ComplaintsInnerType = new GraphQLObjectType({
 	name: "ComplaintsInnerType",
 	fields: {
 		companyOrProduct: { type: GraphQLString },
@@ -8,11 +8,11 @@ const complaintsInnerType = new GraphQLObjectType({
 	}
 });
 
-const complaintsResultType = new GraphQLObjectType({
+const ComplaintsResultType = new GraphQLObjectType({
 	name: "MostComplaintsByResults",
 	fields: {
 		results: {
-			type: complaintsInnerType,
+			type: ComplaintsInnerType,
 			resolve: (args) => {
 				const { company, product, counts } = args;
 				const companyOrProduct = company || product;
@@ -22,4 +22,4 @@ const complaintsResultType = new GraphQLObjectType({
 	}
 });
 
-export default complaintsResultType;
+export default ComplaintsResultType;
