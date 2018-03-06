@@ -5,7 +5,7 @@ import errorhandler from "errorhandler";
 import { Client } from "pg";
 import { graphqlRoute } from "./routes";
 
-// TODO: tests, README
+// TODO: README
 // TODO: fix build steps for production
 
 // TODO: add logger, ORM, ETL or Stream for data
@@ -19,15 +19,21 @@ const PORT = 3333;
 
 // init db and wait for ok
 const connectToDb = async () => {
-	const client = new Client({
-		user: PGUSER,
-		host: PGHOST,
-		database: PGDATABASE,
-		password: PGPASSWORD,
-		port: PGPORT
-	});
-	await client.connect();
-	return client;
+	try {
+		const client = new Client({
+			user: PGUSER,
+			host: PGHOST,
+			database: PGDATABASE,
+			password: PGPASSWORD,
+			port: PGPORT
+		});
+		await client.connect();
+		return client;
+	} catch(e) {
+		// eslint-disable-next-line no-console
+		console.log("Error connecting to PG Client", e);
+		throw e;
+	}
 };
 
 let db;
@@ -74,7 +80,9 @@ const start = async () => {
 const exitHandler = async function(err) {
 	// eslint-disable-next-line no-console
 	if (err) console.log("exitHandler err: " + err.stack);
-	await db.end();
+	if (db) {
+		await db.end();
+	}
 	process.exit();
 };
 
