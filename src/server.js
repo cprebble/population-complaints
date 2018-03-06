@@ -1,3 +1,4 @@
+
 import express from "express";
 import bodyParser from "body-parser";
 import errorhandler from "errorhandler";
@@ -14,6 +15,7 @@ const PGUSER="postgres";
 const PGDATABASE="consumers";
 const PGPASSWORD="Password1!";
 const PGPORT=5432;
+const PORT = 3333;
 
 // init db and wait for ok
 const connectToDb = async () => {
@@ -50,7 +52,6 @@ const init = async () => {
 	return app;
 };
 
-const PORT = 3333;
 const start = async () => {
 	const app = await init();
 

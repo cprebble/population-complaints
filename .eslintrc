@@ -16,10 +16,11 @@
         "linebreak-style": [
             "error",
             "unix"
-        ],
+		],
         "quotes": [
             "error",
-            "double"
+			"double",
+			{ "allowTemplateLiterals": true }
         ],
         "semi": [
             "error",
