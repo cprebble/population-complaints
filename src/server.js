@@ -10,7 +10,7 @@ import { graphqlRoute } from "./routes";
 
 // TODO: add logger, ORM, ETL or Stream for data
 // TODO: move these to .env
-const PGHOST="localhost";
+const PGHOST="postgres";
 const PGUSER="postgres";
 const PGDATABASE="consumers";
 const PGPASSWORD="Password1!";

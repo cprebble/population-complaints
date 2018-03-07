@@ -1,16 +1,15 @@
 version: '2'
 services:
   
-  population-complaints-api:
-    build:
-      context: .
+  api:
+    build: .
     depends_on:
       - postgres
-    volumes:
-      - "./src:."
+    links:
+      - postgres
     ports:
       - "3333:3333"
-    command: yarn start
+    command: ["./wait-for-postgres.sh", "postgres", "5432", "yarn start"]
 
   postgres:
     image: postgres:latest
