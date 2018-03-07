@@ -5,9 +5,6 @@ import errorhandler from "errorhandler";
 import { Client } from "pg";
 import { graphqlRoute } from "./routes";
 
-// TODO: README
-// TODO: fix build steps for production
-
 // TODO: add logger, ORM, ETL or Stream for data
 // TODO: move these to .env
 const PGHOST="postgres";
@@ -17,12 +14,12 @@ const PGPASSWORD="Password1!";
 const PGPORT=5432;
 const PORT = 3333;
 
-// init db and wait for ok
-const connectToDb = async () => {
+// init db
+const connectToDb = async (pghost1) => {
 	try {
 		const client = new Client({
 			user: PGUSER,
-			host: PGHOST,
+			host: pghost1,
 			database: PGDATABASE,
 			password: PGPASSWORD,
 			port: PGPORT
@@ -32,6 +29,10 @@ const connectToDb = async () => {
 	} catch(e) {
 		// eslint-disable-next-line no-console
 		console.log("Error connecting to PG Client", e);
+		if (e.code === "ENOTFOUND") {
+			connectToDb("localhost");
+			return;
+		}
 		throw e;
 	}
 };
@@ -48,7 +49,7 @@ const init = async () => {
 
 	app.use(bodyParser.json());
 
-	db = await connectToDb();
+	db = await connectToDb(PGHOST);
 	app.settings.db = db;
 
 	app.use("/graphql", graphqlRoute(app));

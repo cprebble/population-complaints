@@ -84,10 +84,10 @@ mostComplaintsBy:
 {
   viewer {
     id
-    mostComplaintsBy(returnArg: "product", state: "NY") {
+    mostComplaintsBy(returnCompanyOrProduct: "company", state: "NY") {
       results {
-        product
         counts
+        companyOrProduct
       }
     }
   }
@@ -96,10 +96,10 @@ mostComplaintsBy:
 {
   viewer {
     id
-    mostComplaintsBy(returnArg: "company", state: "CO") {
+    mostComplaintsBy(returnCompanyOrProduct: "product", state: "CO") {
       results {
-        company
         counts
+        companyOrProduct
       }
     }
   }
